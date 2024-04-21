@@ -80,19 +80,3 @@ window.addEventListener('keyup', (e) => {
         removePressedClass(el);
     }
 });
-
-// Event listener for mouse click on the keyboard elements
-Object.values(codeToElement).forEach((element) => {
-    element.addEventListener('mousedown', () => {
-        const eCode = element.getAttribute('data-key-code');
-        handleKeyPress(eCode);
-    });
-
-    element.addEventListener('mouseup', () => {
-        removePressedClass(element);
-    });
-
-    element.addEventListener('mouseleave', () => {
-        removePressedClass(element);
-    });
-});
