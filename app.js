@@ -38,45 +38,56 @@ const codeToSound = {
     'NumpadEnter': 'sounds17/Triangle03 Drums1DOTcom.wav',
 };
 
+let isKeyPressed = false; // Flag to track key press state
+
 // Function to add the "pressed" class to a key element
 const addPressedClass = (el) => {
-    if (el) {
-        el.classList.add('pressed');
-    }
+  if (el) {
+    el.classList.add('pressed');
+  }
 };
 
 // Function to remove the "pressed" class from a key element
 const removePressedClass = (el) => {
-    if (el) {
-        el.classList.remove('pressed');
-    }
+  if (el) {
+    el.classList.remove('pressed');
+  }
 };
 
-// Function to handle key press actions
-const handleKeyPress = (eCode) => {
-    const el = codeToElement[eCode];
-    addPressedClass(el);
-    // Play sound associated with the key, if available
-    const soundFile = codeToSound[eCode];
-    if (soundFile) {
-        const audio = new Audio(soundFile);
-        audio.play();
-    }
-};
+// Function to play the sound associated with a key code (improved for one-time play)
+function playSound(keyCode) {
+  const soundFile = codeToSound[keyCode];
+  if (soundFile && !isKeyPressed) { // Play only if not already pressed
+    const audio = new Audio(soundFile);
+    audio.play();
+    audio.onended = () => audio.currentTime = 0; // Reset audio time for one-time play
+    isKeyPressed = true; // Set flag to true on play
+  }
+}
 
-// Event listener for the keydown event
+// Event listener for the keydown event (improved for specific key codes)
 window.addEventListener('keydown', (e) => {
-    const eCode = e.code;
-    if (eCode.startsWith('Numpad') || eCode === 'NumLock') {
-        handleKeyPress(eCode);
-    }
+  const eCode = e.code;
+  if (eCode.startsWith('Numpad') || eCode === 'NumLock') {
+    handleKeyPress(eCode);
+  }
 });
 
-// Event listener for the keyup event
+// Event listener for the keyup event (improved for visual feedback)
 window.addEventListener('keyup', (e) => {
-    const eCode = e.code;
-    if (eCode.startsWith('Numpad') || eCode === 'NumLock') {
-        const el = codeToElement[eCode];
-        removePressedClass(el);
-    }
+  const eCode = e.code;
+  if (eCode.startsWith('Numpad') || eCode === 'NumLock') {
+    const el = codeToElement[eCode];
+    removePressedClass(el);
+    isKeyPressed = false; // Reset flag on key release
+  }
 });
+
+// Function to handle key press actions (modified to use flag)
+const handleKeyPress = (eCode) => {
+  const el = codeToElement[eCode];
+  if (el) {
+    addPressedClass(el);
+    playSound(eCode);
+  }
+};
